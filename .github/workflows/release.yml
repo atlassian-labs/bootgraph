@@ -1,0 +1,30 @@
+# Creates a GitHub release every time someone pushes on master with a tag "vX.Y.Z".
+
+name: Create GitHub Release
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - 'v*' # only release on tags starting with 'v' (for example 'v1.0.0')
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: "Checkout sources"
+        uses: actions/checkout@v2
+
+      - name: "Create release"
+          id: create_release
+          uses: actions/create-release@latest
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: Release ${{ github.ref }}
+            body: "Please find the changes contained in this release on the milestones page (https://github.com/atlassian-labs/bootgraph/milestones)."
+            draft: false
+            prerelease: false

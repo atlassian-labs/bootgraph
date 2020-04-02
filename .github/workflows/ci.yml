@@ -1,3 +1,5 @@
+# Runs the CI build every time someone pushes to a branch.
+
 name: CI
 
 on: [push]
@@ -10,16 +12,13 @@ jobs:
       - name: "Checkout sources"
         uses: actions/checkout@v2
 
-      - name: Run a one-line script
-        run: echo Hello, world!
-
       - name: "Setup Java"
         uses: actions/setup-java@v1
         with:
           java-version: 8
 
-      - name: "Validate"
-        run: chmod 755 mvnw && ./mvnw clean validate
+      - name: "Test"
+        run: chmod 755 mvnw && ./mvnw test
 
       - name: "Package"
         run: chmod 755 mvnw && ./mvnw package
