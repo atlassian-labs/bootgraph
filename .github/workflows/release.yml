@@ -1,13 +1,11 @@
-# Creates a GitHub release every time someone pushes on master with a tag "vX.Y.Z".
+# Creates a GitHub release on a push to a release branch (naming convention: "release*").
 
 name: Create GitHub Release
 
 on:
   push:
     branches:
-      - master
-    tags:
-      - 'v*' # only release on tags starting with 'v' (for example 'v1.0.0')
+      - release*
 
 jobs:
   build:

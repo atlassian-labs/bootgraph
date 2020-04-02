@@ -1,6 +1,6 @@
 # Runs the CI build every time someone pushes to a branch.
 
-name: CI
+name: Build Branch
 
 on: [push]
 
