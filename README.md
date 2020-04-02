@@ -249,4 +249,4 @@ The class `GraphVizExporterTests` automatically creates .dot files into the `tar
 
 Copyright (c) 2020 Atlassian and others. Apache 2.0 licensed, see [LICENSE](LICENSE) file.
 
-![With Thanks from Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-with-thanks.png)(https://www.atlassian.com)
+[![With Thanks from Atlassian](https://raw.githubusercontent.com/atlassian-internal/oss-assets/master/banner-with-thanks.png)](https://www.atlassian.com)
