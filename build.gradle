@@ -65,6 +65,10 @@ subprojects {
         testCompile 'org.jetbrains.kotlin:kotlin-test-junit5'
     }
 
+    test {
+        useJUnitPlatform()
+    }
+
     task sourcesJar(type: Jar, dependsOn: classes) {
         classifier = 'sources'
         from sourceSets.main.allSource
