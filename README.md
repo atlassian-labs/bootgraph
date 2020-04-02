@@ -6,27 +6,51 @@ With a couple lines of code, you can create a visual graph of part your Spring a
 
 If you put these lines of code into a test, **the graph will be created with every build and evolve together with your code**. No more lying diagrams!
   
-## Usage
+## Installation
 
-### Maven Dependency
+Bootgraph is published via [jitpack.io](https://jitpack.io/). 
 
-Add the following dependencies:
+### Installing in Maven
 
+Add the jitpack.io repository:
+```xml
+<repositories>
+  <repository>
+    <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+  </repository>
+</repositories>
+```
+
+Add the dependency:
 ```xml
 <dependency>
-  <groupId>com.atlassian.bootgraph</groupId>
-  <artifactId>bootgraph-core</artifactId>
-  <version>1.2.2</version>
+  <groupId>com.github.atlassian-labs</groupId>
+  <artifactId>bootgraph</artifactId>
+  <version>1.2.4</version>
   <scope>test</scope>
 </dependency>
-
-<!-- only add if you need annotations providing graph metadata -->
-<dependency>
-  <groupId>com.atlassian.bootgraph</groupId>
-  <artifactId>bootgraph</artifactId>
-  <version>1.2.2</version>
-</dependency>
 ```
+
+### Installing in Gradle
+
+Add the jitpack.io repository:
+```groovy
+repositories {
+  ...
+  maven { url 'https://jitpack.io' }
+}
+```
+
+Add the dependency:
+```groovy
+dependencies {
+  ...
+  testImplementation 'com.github.atlassian-labs:bootgraph:1.2.4'
+}
+```
+
+## Getting Started
 
 ### Basic Usage
 
