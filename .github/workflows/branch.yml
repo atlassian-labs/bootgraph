@@ -17,8 +17,5 @@ jobs:
         with:
           java-version: 8
 
-      - name: "Test"
-        run: chmod 755 mvnw && ./mvnw test
-
-      - name: "Package"
-        run: chmod 755 mvnw && ./mvnw package
+      - name: "Build"
+        run: chmod 755 gradlew && ./gradlew build

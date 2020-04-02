@@ -1,0 +1,8 @@
+dependencies {
+    implementation project(':bootgraph-annotations')
+    implementation 'guru.nidi:graphviz-java'
+
+    compileOnly 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}

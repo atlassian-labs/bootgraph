@@ -1,0 +1,2 @@
+include 'bootgraph-core'
+include 'bootgraph-annotations'
