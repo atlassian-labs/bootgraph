@@ -8,6 +8,10 @@ buildscript {
     }
 }
 
+repositories {
+    jcenter()
+}
+
 plugins {
     id 'java'
     id 'java-library'
