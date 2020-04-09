@@ -19,21 +19,20 @@ repositories {
     jcenter()
 }
 
-group = 'com.atlassian'
-// run gradle with "-Dsnapshot=true" to automatically append "-SNAPSHOT" to the version
-version = '1.2.4' + (Boolean.valueOf(System.getProperty("snapshot")) ? "-SNAPSHOT" : "")
-
 subprojects {
 
     apply plugin: 'java'
     apply plugin: 'java-library'
     apply plugin: 'io.spring.dependency-management'
     apply plugin: 'org.jetbrains.kotlin.jvm'
-    apply plugin: 'maven'
+    apply plugin: 'maven-publish'
 
     repositories {
         jcenter()
     }
+
+    group = 'com.atlassian.bootgraph'
+    version = '1.2.5-SNAPSHOT'
 
     dependencyManagement {
         dependencies {
@@ -94,4 +93,50 @@ subprojects {
         archives sourcesJar
         archives javadocJar
     }
+
+    def pomConfig = {
+        licenses {
+            license {
+                name "Apache License 2.0"
+                url "http://www.apache.org/licenses/"
+                distribution "repo"
+            }
+        }
+        developers {
+            developer {
+                id "thombergs"
+                name "Tom Hombergs"
+                email "tom.hombergs@gmail.com"
+            }
+        }
+
+        scm {
+            url "https://github.com/atlassian-labs/bootgraph"
+        }
+    }
+
+    publishing {
+        publications {
+            mavenPublication(MavenPublication) {
+                from components.java
+                artifact sourcesJar {
+                    classifier "sources"
+                }
+                artifact javadocJar {
+                    classifier "javadoc"
+                }
+                groupId project.group
+                artifactId project.name
+                version project.version
+                pom.withXml {
+                    def root = asNode()
+                    root.appendNode('description', 'A library for graphing Spring Boot application code')
+                    root.appendNode('name', project.name)
+                    root.appendNode('url', 'https://github.com/atlassian-labs/bootgraph')
+                    root.children().last() + pomConfig
+                }
+            }
+        }
+    }
+
 }
