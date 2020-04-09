@@ -15,5 +15,10 @@ interface BeanMapper {
      * @return a Node with potentially connected nodes to be added to the graph. Return an empty Optional if the mapper
      * should not contribute anything to the graph.
      */
-    fun mapToGraph(bean: Any, beanName: String, beanDefinition: BeanDefinition, applicationContext: ConfigurableApplicationContext, factory: NodeFactory): Optional<Node>
+    fun mapToGraph(
+            bean: Any,
+            beanName: String,
+            beanDefinition: BeanDefinition,
+            applicationContext: ConfigurableApplicationContext,
+            factory: NodeFactory): Optional<Node>
 }

@@ -12,6 +12,9 @@ import com.atlassian.bootgraph.api.matcher.AnnotationMatcher
 import com.atlassian.bootgraph.api.matcher.BeanNameMatcher
 import com.atlassian.bootgraph.api.matcher.QualifierMatcher
 import com.atlassian.bootgraph.api.matcher.TypeMatcher
+import com.atlassian.bootgraph.graphviz.ExportConfiguration
+import com.atlassian.bootgraph.graphviz.GraphVizModelExporter
+import com.atlassian.bootgraph.graphviz.OutputFormat
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
@@ -122,12 +125,12 @@ internal class SpringNodeFactoryTests {
     }
 
     @Test
-    fun inputBeanAndOutputBeanAnnotationMatching() {
+    fun inputNodeAndOutputNodeAnnotationMatching() {
 
         val factory = SpringNodeFactory.defaultInstance(
                 applicationName = "test application",
                 applicationContext = applicationContext)
-        // we're expecting the @OutputNode matcher and mapper to be configured by default
+        // we're expecting the @OutputNode and @InputNode matchers and mappers to be configured by default
 
         val model = factory.createApplicationModel()
 
@@ -135,6 +138,12 @@ internal class SpringNodeFactoryTests {
         assertNotNull(model.getNode("topLevelOutputBean"))
         assertNotNull(model.getNode("outputBean"))
         assertNotNull(model.getNode("inputBean"))
+
+        val exporter = GraphVizModelExporter(ExportConfiguration.Builder()
+                .outputFilePath("target/graphviz/inputNodeOutputNode.png")
+                .outputFormat(OutputFormat.PNG)
+                .build())
+        exporter.export(model)
     }
 
     @Test
