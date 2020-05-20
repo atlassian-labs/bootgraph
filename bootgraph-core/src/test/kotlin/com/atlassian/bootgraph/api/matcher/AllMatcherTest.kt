@@ -25,7 +25,7 @@ internal class AllMatcherTest {
         kotlin.test.assertFalse(matcher.matches(Object(), "beanName", mock(BeanDefinition::class.java), mock(ConfigurableApplicationContext::class.java)))
     }
 
-    fun matching(): BeanMatcher{
+    private fun matching(): BeanMatcher{
         return object : BeanMatcher {
             override fun matches(bean: Any, beanName: String, beanDefinition: BeanDefinition, applicationContext: ConfigurableApplicationContext): Boolean {
                 return true
@@ -33,7 +33,7 @@ internal class AllMatcherTest {
         }
     }
 
-    fun notMatching(): BeanMatcher{
+    private fun notMatching(): BeanMatcher{
         return object : BeanMatcher {
             override fun matches(bean: Any, beanName: String, beanDefinition: BeanDefinition, applicationContext: ConfigurableApplicationContext): Boolean {
                 return false
