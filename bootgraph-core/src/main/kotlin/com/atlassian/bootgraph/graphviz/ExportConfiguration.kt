@@ -24,7 +24,7 @@ class ExportConfiguration private constructor(
             builder.outputFormat ?: OutputFormat.PNG,
             builder.showLabelsOnArrows ?: true,
             builder.arrowFormat ?: ArrowFormat.SPLINE,
-            builder.fontName ?: "Arial",
+            FontFinder().findFont(builder.fontName),
             builder.nodeWidthInInches,
             builder.nodeHeightInInches,
             builder.widthInPixels,
