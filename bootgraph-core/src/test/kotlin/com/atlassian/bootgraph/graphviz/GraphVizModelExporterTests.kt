@@ -1,11 +1,13 @@
 package com.atlassian.bootgraph.graphviz
 
-import com.atlassian.bootgraph.api.model.GraphModel
 import com.atlassian.bootgraph.api.model.ExternalNode
+import com.atlassian.bootgraph.api.model.GraphModel
 import com.atlassian.bootgraph.api.model.InternalNode
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
+import kotlin.test.assertFailsWith
 
 internal class GraphVizModelExporterTests {
 
@@ -14,6 +16,13 @@ internal class GraphVizModelExporterTests {
     fun exportTestApplications(graphModel: GraphModel, config: ExportConfiguration) {
         val exporter = GraphVizModelExporter(config)
         exporter.export(graphModel)
+    }
+
+    @Test
+    fun exceptionOnUnknownFont() {
+        assertFailsWith<UnknownFontException> {
+            GraphVizModelExporter(unknownFontConfig("unknownFont"))
+        }
     }
 
     companion object {
@@ -58,6 +67,14 @@ private fun inputAndOutput(): GraphModel {
 
     return GraphModel("my app")
             .addNodes(a, b)
+}
+
+private fun unknownFontConfig(outputFileName: String): ExportConfiguration {
+    return ExportConfiguration.Builder()
+            .outputFilePath("target/graphviz/$outputFileName.png")
+            .outputFormat(OutputFormat.PNG)
+            .fontName("this font does not exist")
+            .build()
 }
 
 private fun dotConfig(outputFileName: String): ExportConfiguration {
