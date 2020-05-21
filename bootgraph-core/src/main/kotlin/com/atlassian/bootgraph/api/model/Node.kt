@@ -1,6 +1,11 @@
 package com.atlassian.bootgraph.api.model
 
-import java.util.Comparator
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.component1
+import kotlin.collections.component2
+import kotlin.collections.set
 
 abstract class Node(
 
@@ -14,9 +19,19 @@ abstract class Node(
          * the application that is graphed. External nodes are outside of the application but may interact
          * with internal nodes.
          */
-        val isExternal: Boolean
+        val isExternal: Boolean,
+
+        /**
+         * Optional name of a cluster to put this node into. All nodes with the same cluster name will be but into a
+         * box representing this cluster.
+         */
+        val cluster: String?
 
 ) {
+
+    constructor(name: String, isExternal: Boolean) :
+            this(name, isExternal, null)
+
 
     /**
      * The inputs to this node from other nodes.
@@ -84,9 +99,9 @@ abstract class Node(
      */
     fun shallowCopy(): Node {
         return if (isExternal) {
-            ExternalNode(name)
+            ExternalNode(name, cluster)
         } else {
-            InternalNode(name)
+            InternalNode(name, cluster)
         }
     }
 
@@ -121,7 +136,7 @@ abstract class Node(
         allNodes.addAll(outputs.keys)
 
         return allNodes.stream()
-                .max(Comparator.comparingInt { node -> node.name.length})
-                .orElseGet {null}
+                .max(Comparator.comparingInt { node -> node.name.length })
+                .orElseGet { null }
     }
 }

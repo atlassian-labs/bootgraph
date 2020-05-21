@@ -35,7 +35,8 @@ internal class GraphVizModelExporterTests {
                 Arguments.of(outputToExternalNode(), dotConfig("outputToExternalNode")),
                 Arguments.of(outputToExternalNode(), pngConfig("outputToExternalNode")),
                 Arguments.of(inputAndOutput(), dotConfig("inputAndOutput")),
-                Arguments.of(inputAndOutput(), pngConfig("inputAndOutput"))
+                Arguments.of(inputAndOutput(), pngConfig("inputAndOutput")),
+                Arguments.of(nodesInClusters(), pngConfig("nodesInClusters"))
         )
     }
 }
@@ -47,6 +48,23 @@ private fun inputFromExternalNode(): GraphModel {
 
     return GraphModel("my app")
             .addNodes(a, b)
+}
+
+private fun nodesInClusters(): GraphModel {
+    val a = ExternalNode("A")
+    val b = InternalNode("B", "cluster1")
+    val c = InternalNode("C", "cluster1")
+    val d = InternalNode("D", "cluster3")
+    val e = InternalNode("E", "cluster2")
+    val f = InternalNode("F", "cluster2")
+    a.addEdgeTo(b, "A to B")
+    a.addEdgeTo(c, "A to C")
+    a.addEdgeTo(d, "A to D")
+    a.addEdgeTo(e, "A to E")
+    a.addEdgeTo(f, "A to F")
+
+    return GraphModel("my app")
+            .addNodes(a, b, c, d, e, f)
 }
 
 private fun outputToExternalNode(): GraphModel {

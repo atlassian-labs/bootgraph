@@ -1,16 +1,11 @@
 package com.atlassian.bootgraph.graphviz
 
 import com.atlassian.bootgraph.api.model.GraphModel
-import guru.nidi.graphviz.attribute.Font
+import com.atlassian.bootgraph.api.model.Node
+import guru.nidi.graphviz.attribute.*
 import guru.nidi.graphviz.attribute.GraphAttr.splines
-import guru.nidi.graphviz.attribute.Label
-import guru.nidi.graphviz.attribute.Rank
-import guru.nidi.graphviz.attribute.Shape
-import guru.nidi.graphviz.attribute.Style
 import guru.nidi.graphviz.engine.Graphviz.fromGraph
-import guru.nidi.graphviz.model.Factory.mutGraph
-import guru.nidi.graphviz.model.Factory.mutNode
-import guru.nidi.graphviz.model.Factory.node
+import guru.nidi.graphviz.model.Factory.*
 import guru.nidi.graphviz.model.Link
 import guru.nidi.graphviz.model.MutableGraph
 import java.io.File
@@ -20,6 +15,8 @@ class GraphVizModelExporter(
 ) {
 
     fun export(graphModel: GraphModel) {
+
+        val context = ExportContext()
 
         val mainGraph = mutGraph().setDirected(true)
 
@@ -44,14 +41,14 @@ class GraphVizModelExporter(
         }
 
         mainGraph.nodeAttrs().add(Shape.RECTANGLE)
-        mainGraph.add(applicationCluster(graphModel))
-        addInputConnections(graphModel, mainGraph)
-        addOutputConnections(graphModel, mainGraph)
+        mainGraph.add(applicationCluster(graphModel, context))
+        addInputConnections(graphModel, mainGraph, context)
+        addOutputConnections(graphModel, mainGraph, context)
 
         exportToFile(mainGraph, config)
     }
 
-    private fun addInputConnections(graphModel: GraphModel, mainGraph: MutableGraph) {
+    private fun addInputConnections(graphModel: GraphModel, mainGraph: MutableGraph, context: ExportContext) {
         for (targetNode in graphModel.getInternalNodes()) {
             for (inputEdge in targetNode.incomingEdges()) {
 
@@ -65,7 +62,7 @@ class GraphVizModelExporter(
         }
     }
 
-    private fun addOutputConnections(graphModel: GraphModel, mainGraph: MutableGraph) {
+    private fun addOutputConnections(graphModel: GraphModel, mainGraph: MutableGraph, context: ExportContext) {
         for (sourceNode in graphModel.getInternalNodes()) {
             for (outputEdge in sourceNode.outgoingEdges()) {
 
@@ -79,35 +76,65 @@ class GraphVizModelExporter(
         }
     }
 
-    private fun inputCluster(graphModel: GraphModel): MutableGraph {
+    private fun inputCluster(): MutableGraph {
         val cluster = mutGraph("input components")
         cluster.graphAttrs().add(Style.INVIS)
         cluster.isCluster = true
         return cluster
     }
 
-    private fun outputCluster(graphModel: GraphModel): MutableGraph {
+    private fun outputCluster(): MutableGraph {
         val cluster = mutGraph("output components")
         cluster.graphAttrs().add(Style.INVIS)
         cluster.isCluster = true
         return cluster
     }
 
-    private fun applicationCluster(graphModel: GraphModel): MutableGraph {
+    private fun nodeCluster(node: Node, context: ExportContext): MutableGraph? {
+
+        if (node.cluster == null) {
+            return null;
+        }
+
+        // create cluster if it doesn't exist
+        if (!context.clusterExists(node.cluster)) {
+            val cluster = mutGraph(node.cluster)
+            cluster.graphAttrs().add(Label.of(node.cluster))
+            cluster.graphAttrs().add(Style.SOLID)
+            cluster.isCluster = true
+            context.addCluster(node.cluster, cluster)
+        }
+
+        return context.getCluster(node.cluster)
+    }
+
+    private fun addNodeOrCluster(node: Node, subGraph: MutableGraph, context: ExportContext) {
+        val cluster = nodeCluster(node, context)
+
+        if (cluster != null) {
+            cluster.add(node(node.name))
+            subGraph.add(cluster)
+        } else {
+            subGraph.add(node(node.name))
+        }
+    }
+
+    private fun applicationCluster(graphModel: GraphModel, context: ExportContext): MutableGraph {
         val applicationCluster = mutGraph("application")
-        applicationCluster.graphAttrs().add(Label.of("${graphModel.name}\\l"))
+        applicationCluster.graphAttrs().add(Label.of(graphModel.name))
         applicationCluster.isCluster = true
 
-        val inputCluster = inputCluster(graphModel)
-        val outputCluster = outputCluster(graphModel)
+        val inputCluster = inputCluster()
+        val outputCluster = outputCluster()
 
         for (node in graphModel.getInternalNodes()) {
+
             if (!node.isExternal && node.inputs.keys.any { it.isExternal }) {
-                inputCluster.add(node(node.name))
+                addNodeOrCluster(node, inputCluster, context)
             } else if (!node.isExternal && node.outputs.keys.any { it.isExternal }) {
-                outputCluster.add(node(node.name))
+                addNodeOrCluster(node, outputCluster, context)
             } else {
-                applicationCluster.add(node(node.name))
+                addNodeOrCluster(node, applicationCluster, context)
             }
         }
 
