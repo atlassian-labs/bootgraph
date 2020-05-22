@@ -6,9 +6,11 @@ import guru.nidi.graphviz.attribute.*
 import guru.nidi.graphviz.attribute.GraphAttr.COMPOUND
 import guru.nidi.graphviz.attribute.GraphAttr.splines
 import guru.nidi.graphviz.engine.Graphviz.fromGraph
-import guru.nidi.graphviz.model.Factory.*
+import guru.nidi.graphviz.model.Factory.mutGraph
+import guru.nidi.graphviz.model.Factory.mutNode
 import guru.nidi.graphviz.model.Link
 import guru.nidi.graphviz.model.MutableGraph
+import guru.nidi.graphviz.model.MutableNode
 import java.io.File
 
 class GraphVizModelExporter(
@@ -54,10 +56,13 @@ class GraphVizModelExporter(
         for (targetNode in graphModel.getInternalNodes()) {
             for (inputEdge in targetNode.incomingEdges()) {
 
+                val from = toGraphvizNode(inputEdge.from)
+                val to = toGraphvizNode(targetNode)
+
                 val link =
                         if (config.showConnectionLabels && inputEdge.label !== null)
-                            Link.to(mutNode(targetNode.name)).with(Label.of(inputEdge.label))
-                        else Link.to(mutNode(targetNode.name))
+                            Link.to(to).with(Label.of(inputEdge.label))
+                        else Link.to(to)
 
                 if (!config.showNodesInClusters) {
                     if (inputEdge.from.cluster != null) {
@@ -68,7 +73,7 @@ class GraphVizModelExporter(
                     }
                 }
 
-                mainGraph.add(mutNode(inputEdge.from.name)
+                mainGraph.add(from
                         .addLink(link))
             }
         }
@@ -78,10 +83,13 @@ class GraphVizModelExporter(
         for (sourceNode in graphModel.getInternalNodes()) {
             for (outputEdge in sourceNode.outgoingEdges()) {
 
+                val from = toGraphvizNode(sourceNode)
+                val to = toGraphvizNode(outputEdge.to)
+
                 val link =
                         if (config.showConnectionLabels && outputEdge.label !== null)
-                            Link.to(mutNode(outputEdge.to.name)).with(Label.of(outputEdge.label))
-                        else Link.to(mutNode(outputEdge.to.name))
+                            Link.to(to).with(Label.of(outputEdge.label))
+                        else Link.to(to)
 
                 if (!config.showNodesInClusters) {
                     if (sourceNode.cluster != null) {
@@ -92,7 +100,7 @@ class GraphVizModelExporter(
                     }
                 }
 
-                mainGraph.add(mutNode(sourceNode.name)
+                mainGraph.add(from
                         .addLink(link))
             }
         }
@@ -138,14 +146,27 @@ class GraphVizModelExporter(
         return context.getCluster(node.cluster)
     }
 
+    private fun toGraphvizNode(node: Node): MutableNode {
+        val mutNode = mutNode(node.name)
+
+        if (node.cluster != null && !config.showNodesInClusters) {
+            mutNode.add(Style.INVIS)
+            mutNode.add(Attributes.attr("fixedsize", "true"))
+            mutNode.add(Attributes.attr("width", "0"))
+            mutNode.add(Attributes.attr("height", "0"))
+        }
+
+        return mutNode
+    }
+
     private fun addNodeOrCluster(node: Node, subGraph: MutableGraph, context: ExportContext) {
         val cluster = nodeCluster(node, context)
 
         if (cluster != null) {
-            cluster.add(node(node.name))
+            cluster.add(toGraphvizNode(node))
             subGraph.add(cluster)
         } else {
-            subGraph.add(node(node.name))
+            subGraph.add(toGraphvizNode(node))
         }
     }
 

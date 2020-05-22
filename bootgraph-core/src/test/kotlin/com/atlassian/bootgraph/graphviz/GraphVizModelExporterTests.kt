@@ -57,17 +57,25 @@ private fun nodesInClusters(): GraphModel {
     val a = ExternalNode("A")
     val b = InternalNode("B", "cluster1")
     val c = InternalNode("C", "cluster1")
+    val q = InternalNode("Q", "cluster1")
+    val w = InternalNode("W", "cluster1")
     val d = InternalNode("D", "cluster3")
     val e = InternalNode("E", "cluster2")
     val f = InternalNode("F", "cluster2")
+    val x = InternalNode("X", "cluster4")
+    val y = InternalNode("Y", "cluster4")
+    val z = InternalNode("Z", "cluster4")
     a.addEdgeTo(b, "A to B")
     a.addEdgeTo(c, "A to C")
     a.addEdgeTo(d, "A to D")
     a.addEdgeTo(e, "A to E")
     a.addEdgeTo(f, "A to F")
+    c.addEdgeTo(x, "C to X")
+    d.addEdgeTo(x, "D to X")
+    b.addEdgeTo(y, "B to Y")
 
     return GraphModel("my app")
-            .addNodes(a, b, c, d, e, f)
+            .addNodes(a, b, c, d, e, f, q, w, x, y, z)
 }
 
 private fun outputToExternalNode(): GraphModel {
