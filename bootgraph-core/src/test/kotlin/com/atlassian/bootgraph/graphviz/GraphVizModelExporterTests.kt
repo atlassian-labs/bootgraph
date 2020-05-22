@@ -13,15 +13,15 @@ internal class GraphVizModelExporterTests {
 
     @ParameterizedTest
     @MethodSource("parameters")
-    fun exportTestApplications(graphModel: GraphModel, config: ExportConfiguration) {
-        val exporter = GraphVizModelExporter(config)
+    fun exportTestApplications(graphModel: GraphModel, configBuilder: ExportConfiguration.Builder) {
+        val exporter = GraphVizModelExporter(configBuilder.build())
         exporter.export(graphModel)
     }
 
     @Test
     fun exceptionOnUnknownFont() {
         assertFailsWith<UnknownFontException> {
-            GraphVizModelExporter(unknownFontConfig("unknownFont"))
+            GraphVizModelExporter(unknownFontConfig("unknownFont").build())
         }
     }
 
@@ -36,7 +36,10 @@ internal class GraphVizModelExporterTests {
                 Arguments.of(outputToExternalNode(), pngConfig("outputToExternalNode")),
                 Arguments.of(inputAndOutput(), dotConfig("inputAndOutput")),
                 Arguments.of(inputAndOutput(), pngConfig("inputAndOutput")),
-                Arguments.of(nodesInClusters(), pngConfig("nodesInClusters"))
+                Arguments.of(nodesInClusters(), pngConfig("showNodesInClustersFalse").showNodesInClusters(false)),
+                Arguments.of(nodesInClusters(), dotConfig("showNodesInClustersFalse").showNodesInClusters(false)),
+                Arguments.of(nodesInClusters(), pngConfig("showNodesInClustersTrue").showNodesInClusters(true)),
+                Arguments.of(nodesInClusters(), dotConfig("showNodesInClustersTrue").showNodesInClusters(true))
         )
     }
 }
@@ -87,40 +90,35 @@ private fun inputAndOutput(): GraphModel {
             .addNodes(a, b)
 }
 
-private fun unknownFontConfig(outputFileName: String): ExportConfiguration {
+private fun unknownFontConfig(outputFileName: String): ExportConfiguration.Builder {
     return ExportConfiguration.Builder()
             .outputFilePath("target/graphviz/$outputFileName.png")
             .outputFormat(OutputFormat.PNG)
             .fontName("this font does not exist")
-            .build()
 }
 
-private fun dotConfig(outputFileName: String): ExportConfiguration {
+private fun dotConfig(outputFileName: String): ExportConfiguration.Builder {
     return ExportConfiguration.Builder()
             .outputFilePath("target/graphviz/$outputFileName.dot")
             .outputFormat(OutputFormat.DOT)
-            .build()
 }
 
-private fun pngConfig(outputFileName: String): ExportConfiguration {
+private fun pngConfig(outputFileName: String): ExportConfiguration.Builder {
     return ExportConfiguration.Builder()
             .outputFilePath("target/graphviz/$outputFileName.png")
             .outputFormat(OutputFormat.PNG)
-            .build()
 }
 
-private fun noLabelsDotConfig(outputFileName: String): ExportConfiguration {
+private fun noLabelsDotConfig(outputFileName: String): ExportConfiguration.Builder {
     return ExportConfiguration.Builder()
             .outputFilePath("target/graphviz/$outputFileName.dot")
             .outputFormat(OutputFormat.DOT)
             .showLabelsOnArrows(false)
-            .build()
 }
 
-private fun noLabelsPngConfig(outputFileName: String): ExportConfiguration {
+private fun noLabelsPngConfig(outputFileName: String): ExportConfiguration.Builder {
     return ExportConfiguration.Builder()
             .outputFilePath("target/graphviz/$outputFileName.png")
             .outputFormat(OutputFormat.PNG)
             .showLabelsOnArrows(false)
-            .build()
 }

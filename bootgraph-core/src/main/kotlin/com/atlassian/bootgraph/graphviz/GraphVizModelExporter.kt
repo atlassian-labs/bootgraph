@@ -3,6 +3,7 @@ package com.atlassian.bootgraph.graphviz
 import com.atlassian.bootgraph.api.model.GraphModel
 import com.atlassian.bootgraph.api.model.Node
 import guru.nidi.graphviz.attribute.*
+import guru.nidi.graphviz.attribute.GraphAttr.COMPOUND
 import guru.nidi.graphviz.attribute.GraphAttr.splines
 import guru.nidi.graphviz.engine.Graphviz.fromGraph
 import guru.nidi.graphviz.model.Factory.*
@@ -23,6 +24,7 @@ class GraphVizModelExporter(
         mainGraph.graphAttrs().add(splines(config.arrowFormat.graphVizFormat))
 
         mainGraph.graphAttrs().add(Rank.dir(Rank.RankDir.LEFT_TO_RIGHT))
+        mainGraph.graphAttrs().add(COMPOUND)
 
         config.fontName?.let {
             mainGraph.graphAttrs().add(Font.name(it))
@@ -45,16 +47,26 @@ class GraphVizModelExporter(
         addInputConnections(graphModel, mainGraph, context)
         addOutputConnections(graphModel, mainGraph, context)
 
-        exportToFile(mainGraph, config)
+        exportToFile(mainGraph)
     }
 
     private fun addInputConnections(graphModel: GraphModel, mainGraph: MutableGraph, context: ExportContext) {
         for (targetNode in graphModel.getInternalNodes()) {
             for (inputEdge in targetNode.incomingEdges()) {
 
-                val link = if (config.showConnectionLabels && inputEdge.label !== null)
-                    Link.to(mutNode(targetNode.name)).with(Label.of(inputEdge.label))
-                else Link.to(mutNode(targetNode.name))
+                val link =
+                        if (config.showConnectionLabels && inputEdge.label !== null)
+                            Link.to(mutNode(targetNode.name)).with(Label.of(inputEdge.label))
+                        else Link.to(mutNode(targetNode.name))
+
+                if (!config.showNodesInClusters) {
+                    if (inputEdge.from.cluster != null) {
+                        makeLinkSourceCluster(link, inputEdge.from.cluster)
+                    }
+                    if (targetNode.cluster != null) {
+                        makeLinkTargetCluster(link, targetNode.cluster)
+                    }
+                }
 
                 mainGraph.add(mutNode(inputEdge.from.name)
                         .addLink(link))
@@ -66,14 +78,32 @@ class GraphVizModelExporter(
         for (sourceNode in graphModel.getInternalNodes()) {
             for (outputEdge in sourceNode.outgoingEdges()) {
 
-                val link = if (config.showConnectionLabels && outputEdge.label !== null)
-                    Link.to(mutNode(outputEdge.to.name)).with(Label.of(outputEdge.label))
-                else Link.to(mutNode(outputEdge.to.name))
+                val link =
+                        if (config.showConnectionLabels && outputEdge.label !== null)
+                            Link.to(mutNode(outputEdge.to.name)).with(Label.of(outputEdge.label))
+                        else Link.to(mutNode(outputEdge.to.name))
+
+                if (!config.showNodesInClusters) {
+                    if (sourceNode.cluster != null) {
+                        makeLinkSourceCluster(link, sourceNode.cluster)
+                    }
+                    if (outputEdge.to.cluster != null) {
+                        makeLinkTargetCluster(link, outputEdge.to.cluster)
+                    }
+                }
 
                 mainGraph.add(mutNode(sourceNode.name)
                         .addLink(link))
             }
         }
+    }
+
+    private fun makeLinkTargetCluster(link: Link, clusterName: String) {
+        link.add(Attributes.attr("lhead", "cluster_${clusterName}"))
+    }
+
+    private fun makeLinkSourceCluster(link: Link, clusterName: String) {
+        link.add(Attributes.attr("ltail", "cluster_${clusterName}"))
     }
 
     private fun inputCluster(): MutableGraph {
@@ -144,7 +174,7 @@ class GraphVizModelExporter(
         return applicationCluster
     }
 
-    private fun exportToFile(graph: MutableGraph, config: ExportConfiguration) {
+    private fun exportToFile(graph: MutableGraph) {
         val graphViz = fromGraph(graph)
 
         config.widthInPixels?.let {
