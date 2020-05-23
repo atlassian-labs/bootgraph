@@ -8,7 +8,7 @@ If you put these lines of code into a test, **the graph will be created with eve
   
 ## Installation
 
-Bootgraph is published via [jitpack.io](https://jitpack.io/). 
+Bootgraph is published via [jitpack.io](https://jitpack.io/). Note that is is only temporary. As soon as the code is somewhat more stable, we'll publish it to Maven Central.
 
 ### Installing in Maven
 
