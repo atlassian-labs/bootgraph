@@ -4,7 +4,6 @@ import com.atlassian.bootgraph.api.mapper.NodeFactory
 import com.atlassian.bootgraph.api.model.InternalNode
 import com.atlassian.bootgraph.api.model.Node
 import org.springframework.core.env.Environment
-import java.util.Optional
 
 class SpelEvaluator {
 
@@ -29,8 +28,8 @@ class SpelEvaluator {
     }
 
     private fun evaluateSpel(model: Node, factory: NodeFactory, environment: Environment): Node {
-        return if (model is InternalNode) factory.internalNode(evaluateSpel(model.name, environment))
-        else factory.externalNode(evaluateSpel(model.name, environment))
+        return if (model is InternalNode) factory.internalNode(evaluateSpel(model.name, environment), evaluateSpelOptionally(model.cluster, environment))
+        else factory.externalNode(evaluateSpel(model.name, environment), evaluateSpelOptionally(model.cluster, environment))
     }
 
     private fun evaluateSpelOptionally(string: String?, environment: Environment): String? {
