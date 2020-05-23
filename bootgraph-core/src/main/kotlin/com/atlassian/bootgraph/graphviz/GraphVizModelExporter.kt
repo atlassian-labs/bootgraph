@@ -1,5 +1,6 @@
 package com.atlassian.bootgraph.graphviz
 
+import com.atlassian.bootgraph.api.filter.ClusterFilter
 import com.atlassian.bootgraph.api.model.GraphModel
 import com.atlassian.bootgraph.api.model.Node
 import guru.nidi.graphviz.attribute.*
@@ -20,6 +21,8 @@ class GraphVizModelExporter(
     fun export(graphModel: GraphModel) {
 
         val context = ExportContext()
+
+        val model = applyFilters(graphModel)
 
         val mainGraph = mutGraph().setDirected(true)
 
@@ -45,11 +48,19 @@ class GraphVizModelExporter(
         }
 
         mainGraph.nodeAttrs().add(Shape.RECTANGLE)
-        mainGraph.add(applicationCluster(graphModel, context))
-        addInputConnections(graphModel, mainGraph, context)
-        addOutputConnections(graphModel, mainGraph, context)
+        mainGraph.add(applicationCluster(model, context))
+        addInputConnections(model, mainGraph, context)
+        addOutputConnections(model, mainGraph, context)
 
         exportToFile(mainGraph)
+    }
+
+    private fun applyFilters(model: GraphModel): GraphModel {
+        var filteredModel = model
+        if (!config.showNodesInClusters) {
+            filteredModel.apply { ClusterFilter() }
+        }
+        return filteredModel
     }
 
     private fun addInputConnections(graphModel: GraphModel, mainGraph: MutableGraph, context: ExportContext) {
