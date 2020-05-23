@@ -58,7 +58,7 @@ class GraphVizModelExporter(
     private fun applyFilters(model: GraphModel): GraphModel {
         var filteredModel = model
         if (!config.showNodesInClusters) {
-            filteredModel.apply { ClusterFilter() }
+           filteredModel = ClusterFilter().applyTo(model)
         }
         return filteredModel
     }
@@ -74,15 +74,6 @@ class GraphVizModelExporter(
                         if (config.showConnectionLabels && inputEdge.label !== null)
                             Link.to(to).with(Label.of(inputEdge.label))
                         else Link.to(to)
-
-                if (!config.showNodesInClusters) {
-                    if (inputEdge.from.cluster != null) {
-                        makeLinkSourceCluster(link, inputEdge.from.cluster)
-                    }
-                    if (targetNode.cluster != null) {
-                        makeLinkTargetCluster(link, targetNode.cluster)
-                    }
-                }
 
                 mainGraph.add(from
                         .addLink(link))
@@ -102,27 +93,10 @@ class GraphVizModelExporter(
                             Link.to(to).with(Label.of(outputEdge.label))
                         else Link.to(to)
 
-                if (!config.showNodesInClusters) {
-                    if (sourceNode.cluster != null) {
-                        makeLinkSourceCluster(link, sourceNode.cluster)
-                    }
-                    if (outputEdge.to.cluster != null) {
-                        makeLinkTargetCluster(link, outputEdge.to.cluster)
-                    }
-                }
-
                 mainGraph.add(from
                         .addLink(link))
             }
         }
-    }
-
-    private fun makeLinkTargetCluster(link: Link, clusterName: String) {
-        link.add(Attributes.attr("lhead", "cluster_${clusterName}"))
-    }
-
-    private fun makeLinkSourceCluster(link: Link, clusterName: String) {
-        link.add(Attributes.attr("ltail", "cluster_${clusterName}"))
     }
 
     private fun inputCluster(): MutableGraph {
@@ -158,16 +132,7 @@ class GraphVizModelExporter(
     }
 
     private fun toGraphvizNode(node: Node): MutableNode {
-        val mutNode = mutNode(node.name)
-
-        if (node.cluster != null && !config.showNodesInClusters) {
-            mutNode.add(Style.INVIS)
-            mutNode.add(Attributes.attr("fixedsize", "true"))
-            mutNode.add(Attributes.attr("width", "0"))
-            mutNode.add(Attributes.attr("height", "0"))
-        }
-
-        return mutNode
+        return mutNode(node.name)
     }
 
     private fun addNodeOrCluster(node: Node, subGraph: MutableGraph, context: ExportContext) {
