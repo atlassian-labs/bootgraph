@@ -7,7 +7,7 @@ import kotlin.collections.component1
 import kotlin.collections.component2
 import kotlin.collections.set
 
-abstract class Node(
+open class Node(
 
         /**
          * The name of the node. This is the unique identifier for a node within the model.
@@ -79,6 +79,10 @@ abstract class Node(
 
     fun outgoingEdges(): Collection<Edge> {
         return outputs.values
+    }
+
+    fun isInCluster(): Boolean {
+        return cluster != null
     }
 
     override fun equals(other: Any?): Boolean {

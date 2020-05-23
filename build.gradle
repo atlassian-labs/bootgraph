@@ -52,6 +52,7 @@ subprojects {
 
             dependency 'org.jetbrains.kotlin:kotlin-test:1.3.41'
             dependency 'org.jetbrains.kotlin:kotlin-test-junit5:1.3.41'
+            dependency 'com.willowtreeapps.assertk:assertk:0.22'
         }
     }
 
@@ -66,6 +67,8 @@ subprojects {
 
         testCompile 'org.jetbrains.kotlin:kotlin-test'
         testCompile 'org.jetbrains.kotlin:kotlin-test-junit5'
+        testCompile 'org.jetbrains.kotlin:kotlin-test-junit5'
+        testCompile 'com.willowtreeapps.assertk:assertk:0.22'
     }
 
     test {
