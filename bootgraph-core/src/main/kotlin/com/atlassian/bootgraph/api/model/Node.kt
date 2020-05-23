@@ -43,28 +43,30 @@ abstract class Node(
      */
     internal val outputs: MutableMap<Node, Edge> = HashMap()
 
-    fun addEdgeTo(toNode: Node) {
-        addEdgeTo(toNode, null)
+    fun addEdgeTo(toNode: Node): Node {
+        return addEdgeTo(toNode, null)
     }
 
-    fun addEdgeTo(toNode: Node, connectionLabel: String?) {
+    fun addEdgeTo(toNode: Node, connectionLabel: String?): Node {
         val edge = Edge(this, toNode, connectionLabel)
         outputs[toNode] = edge
         toNode.inputs[this] = edge
+        return this;
     }
 
     fun hasEdgeTo(toNode: Node): Boolean {
         return outputs.containsKey(toNode)
     }
 
-    fun addEdgeFrom(fromNode: Node, connectionLabel: String?) {
+    fun addEdgeFrom(fromNode: Node, connectionLabel: String?): Node {
         val edge = Edge(fromNode, this, connectionLabel)
         inputs[fromNode] = edge
         fromNode.outputs[this] = edge
+        return this
     }
 
-    fun addEdgeFrom(fromNode: Node) {
-        addEdgeFrom(fromNode, null)
+    fun addEdgeFrom(fromNode: Node): Node {
+        return addEdgeFrom(fromNode, null)
     }
 
     fun hasEdgeFrom(fromNode: Node): Boolean {
