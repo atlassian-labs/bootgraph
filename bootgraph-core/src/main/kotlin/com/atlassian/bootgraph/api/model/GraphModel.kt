@@ -16,7 +16,7 @@ data class GraphModel(
 ) {
 
     companion object {
-        private val logger = LoggerFactory.getLogger(GraphModel.javaClass)
+        private val logger = LoggerFactory.getLogger(GraphModel::class.java)
     }
 
     private val nodes: MutableMap<String, Node> = HashMap()

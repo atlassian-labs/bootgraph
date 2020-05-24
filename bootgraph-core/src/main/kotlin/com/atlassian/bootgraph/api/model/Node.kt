@@ -5,7 +5,6 @@ import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 import kotlin.collections.component1
 import kotlin.collections.component2
-import kotlin.collections.set
 
 open class Node(
 
@@ -36,12 +35,12 @@ open class Node(
     /**
      * The inputs to this node from other nodes.
      */
-    internal val inputs: MutableMap<Node, Edge> = HashMap()
+    internal val inputs: MutableMap<Node, MutableSet<Edge>> = HashMap()
 
     /**
      * The outputs from this node to other nodes.
      */
-    internal val outputs: MutableMap<Node, Edge> = HashMap()
+    internal val outputs: MutableMap<Node, MutableSet<Edge>> = HashMap()
 
     fun addEdgeTo(toNode: Node): Node {
         return addEdgeTo(toNode, null)
@@ -49,9 +48,11 @@ open class Node(
 
     fun addEdgeTo(toNode: Node, connectionLabel: String?): Node {
         val edge = Edge(this, toNode, connectionLabel)
-        outputs[toNode] = edge
-        toNode.inputs[this] = edge
-        return this;
+
+        outputs.getOrPut(toNode, { HashSet() }).add(edge)
+        toNode.inputs.getOrPut(this, { HashSet() }).add(edge)
+
+        return this
     }
 
     fun hasEdgeTo(toNode: Node): Boolean {
@@ -60,8 +61,10 @@ open class Node(
 
     fun addEdgeFrom(fromNode: Node, connectionLabel: String?): Node {
         val edge = Edge(fromNode, this, connectionLabel)
-        inputs[fromNode] = edge
-        fromNode.outputs[this] = edge
+
+        inputs.getOrPut(fromNode, { HashSet() }).add(edge)
+        fromNode.outputs.getOrPut(this, { HashSet() }).add(edge)
+
         return this
     }
 
@@ -74,11 +77,11 @@ open class Node(
     }
 
     fun incomingEdges(): Collection<Edge> {
-        return inputs.values
+        return inputs.values.flatten()
     }
 
     fun outgoingEdges(): Collection<Edge> {
-        return outputs.values
+        return outputs.values.flatten()
     }
 
     fun isInCluster(): Boolean {
