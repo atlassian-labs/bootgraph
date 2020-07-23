@@ -16,13 +16,21 @@ class NodeFactory(
     private val spelEvaluator = SpelEvaluator()
 
     fun internalNode(name: String): Node {
+        return internalNode(name, null)
+    }
+
+    fun internalNode(name: String, cluster: String?): Node {
         val evaluatedName = spelEvaluator.evaluateSpel(name, environment)
-        return model.getNode(evaluatedName) ?: InternalNode(evaluatedName)
+        return model.getNode(evaluatedName) ?: InternalNode(evaluatedName, cluster)
     }
 
     fun externalNode(name: String): Node {
+        return externalNode(name, null)
+    }
+
+    fun externalNode(name: String, cluster: String?): Node {
         val evaluatedName = spelEvaluator.evaluateSpel(name, environment)
-        return model.getNode(evaluatedName) ?: ExternalNode(evaluatedName)
+        return model.getNode(evaluatedName) ?: ExternalNode(evaluatedName, cluster)
     }
 
     fun getExistingNode(name: String): Node {

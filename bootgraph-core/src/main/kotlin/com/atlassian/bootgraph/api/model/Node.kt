@@ -1,8 +1,12 @@
 package com.atlassian.bootgraph.api.model
 
-import java.util.Comparator
+import java.util.*
+import kotlin.collections.HashMap
+import kotlin.collections.HashSet
+import kotlin.collections.component1
+import kotlin.collections.component2
 
-abstract class Node(
+open class Node(
 
         /**
          * The name of the node. This is the unique identifier for a node within the model.
@@ -14,42 +18,58 @@ abstract class Node(
          * the application that is graphed. External nodes are outside of the application but may interact
          * with internal nodes.
          */
-        val isExternal: Boolean
+        val isExternal: Boolean,
+
+        /**
+         * Optional name of a cluster to put this node into. All nodes with the same cluster name will be but into a
+         * box representing this cluster.
+         */
+        val cluster: String?
 
 ) {
+
+    constructor(name: String, isExternal: Boolean) :
+            this(name, isExternal, null)
+
 
     /**
      * The inputs to this node from other nodes.
      */
-    internal val inputs: MutableMap<Node, Edge> = HashMap()
+    internal val inputs: MutableMap<Node, MutableSet<Edge>> = HashMap()
 
     /**
      * The outputs from this node to other nodes.
      */
-    internal val outputs: MutableMap<Node, Edge> = HashMap()
+    internal val outputs: MutableMap<Node, MutableSet<Edge>> = HashMap()
 
-    fun addEdgeTo(toNode: Node) {
-        addEdgeTo(toNode, null)
+    fun addEdgeTo(toNode: Node): Node {
+        return addEdgeTo(toNode, null)
     }
 
-    fun addEdgeTo(toNode: Node, connectionLabel: String?) {
+    fun addEdgeTo(toNode: Node, connectionLabel: String?): Node {
         val edge = Edge(this, toNode, connectionLabel)
-        outputs[toNode] = edge
-        toNode.inputs[this] = edge
+
+        outputs.getOrPut(toNode, { HashSet() }).add(edge)
+        toNode.inputs.getOrPut(this, { HashSet() }).add(edge)
+
+        return this
     }
 
     fun hasEdgeTo(toNode: Node): Boolean {
         return outputs.containsKey(toNode)
     }
 
-    fun addEdgeFrom(fromNode: Node, connectionLabel: String?) {
+    fun addEdgeFrom(fromNode: Node, connectionLabel: String?): Node {
         val edge = Edge(fromNode, this, connectionLabel)
-        inputs[fromNode] = edge
-        fromNode.outputs[this] = edge
+
+        inputs.getOrPut(fromNode, { HashSet() }).add(edge)
+        fromNode.outputs.getOrPut(this, { HashSet() }).add(edge)
+
+        return this
     }
 
-    fun addEdgeFrom(fromNode: Node) {
-        addEdgeFrom(fromNode, null)
+    fun addEdgeFrom(fromNode: Node): Node {
+        return addEdgeFrom(fromNode, null)
     }
 
     fun hasEdgeFrom(fromNode: Node): Boolean {
@@ -57,11 +77,15 @@ abstract class Node(
     }
 
     fun incomingEdges(): Collection<Edge> {
-        return inputs.values
+        return inputs.values.flatten()
     }
 
     fun outgoingEdges(): Collection<Edge> {
-        return outputs.values
+        return outputs.values.flatten()
+    }
+
+    fun isInCluster(): Boolean {
+        return cluster != null
     }
 
     override fun equals(other: Any?): Boolean {
@@ -84,9 +108,9 @@ abstract class Node(
      */
     fun shallowCopy(): Node {
         return if (isExternal) {
-            ExternalNode(name)
+            ExternalNode(name, cluster)
         } else {
-            InternalNode(name)
+            InternalNode(name, cluster)
         }
     }
 
@@ -121,7 +145,7 @@ abstract class Node(
         allNodes.addAll(outputs.keys)
 
         return allNodes.stream()
-                .max(Comparator.comparingInt { node -> node.name.length})
-                .orElseGet {null}
+                .max(Comparator.comparingInt { node -> node.name.length })
+                .orElseGet { null }
     }
 }

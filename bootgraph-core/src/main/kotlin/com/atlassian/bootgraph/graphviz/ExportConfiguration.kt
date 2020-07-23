@@ -9,7 +9,8 @@ class ExportConfiguration private constructor(
         val nodeWidthInInches: Float? = null,
         val nodeHeightInInches: Float? = null,
         val widthInPixels: Int? = null,
-        val heightInPixels: Int? = null
+        val heightInPixels: Int? = null,
+        val showNodesInClusters: Boolean
 ) {
 
     /**
@@ -24,11 +25,12 @@ class ExportConfiguration private constructor(
             builder.outputFormat ?: OutputFormat.PNG,
             builder.showLabelsOnArrows ?: true,
             builder.arrowFormat ?: ArrowFormat.SPLINE,
-            builder.fontName ?: "Arial",
+            FontFinder().findFont(builder.fontName),
             builder.nodeWidthInInches,
             builder.nodeHeightInInches,
             builder.widthInPixels,
-            builder.heightInPixels
+            builder.heightInPixels,
+            builder.showNodesInClusters ?: true
     )
 
     class Builder {
@@ -57,6 +59,9 @@ class ExportConfiguration private constructor(
             private set
 
         var heightInPixels: Int? = null
+            private set
+
+        var showNodesInClusters: Boolean? = true
             private set
 
         /**
@@ -112,6 +117,12 @@ class ExportConfiguration private constructor(
          * Increase the height for a better resolution.
          */
         fun heightInPixels(heightInPixels: Int) = apply { this.heightInPixels = heightInPixels }
+
+        /**
+         * If true (default) nodes with a cluster name are shown. If false, only the cluster will be shown.
+         * Arrows to / from beans with a cluster name are drawn to / from the cluster, then.
+         */
+        fun showNodesInClusters(showNodesInClusters: Boolean) = apply { this.showNodesInClusters = showNodesInClusters }
 
         fun build(): ExportConfiguration = ExportConfiguration(this)
     }

@@ -8,7 +8,7 @@ If you put these lines of code into a test, **the graph will be created with eve
   
 ## Installation
 
-Bootgraph is published via [jitpack.io](https://jitpack.io/). 
+Bootgraph is published via [jitpack.io](https://jitpack.io/). Note that is is only temporary. As soon as the code is somewhat more stable, we'll publish it to Maven Central.
 
 ### Installing in Maven
 
@@ -27,7 +27,7 @@ Add the dependency:
 <dependency>
   <groupId>com.github.atlassian-labs</groupId>
   <artifactId>bootgraph</artifactId>
-  <version>1.2.4</version>
+  <version>1.3.1-beta</version>
   <scope>test</scope>
 </dependency>
 ```
@@ -46,7 +46,7 @@ Add the dependency:
 ```groovy
 dependencies {
   ...
-  testImplementation 'com.github.atlassian-labs:bootgraph:1.2.4'
+  testImplementation 'com.github.atlassian-labs:bootgraph:1.3.1-beta'
 }
 ```
 
