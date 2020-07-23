@@ -19,3 +19,7 @@ jobs:
 
       - name: "Build"
         run: chmod 755 gradlew && ./gradlew build
+
+      - name: "Publish"
+        if: github.ref == 'refs/heads/release'
+        run: chmod 755 gradlew && ./gradlew artifactoryPublish
