@@ -37,8 +37,8 @@ subprojects {
         jcenter()
     }
 
-    group = 'com.atlassian'
-    version = 'TEST-0.0.16'
+    group = 'com.atlassian.bootgraph'
+    version = '1.2.4'
 
     dependencyManagement {
         dependencies {
@@ -82,13 +82,13 @@ subprojects {
     }
 
     task sourcesJar(type: Jar, dependsOn: classes) {
-        classifier = 'sources'
+        archiveClassifier.set('sources')
         from sourceSets.main.allSource
     }
 
     javadoc.failOnError = false
     task javadocJar(type: Jar, dependsOn: javadoc) {
-        classifier = 'javadoc'
+        archiveClassifier.set('javadoc')
         from javadoc.destinationDir
     }
 
@@ -139,7 +139,7 @@ subprojects {
                 version project.version
                 pom.withXml {
                     def root = asNode()
-                    root.appendNode('description', 'A library for graphing Spring Boot application code')
+                    root.appendNode('description', 'A library for visualizing Spring Boot application code')
                     root.appendNode('name', project.name)
                     root.appendNode('url', 'https://github.com/atlassian-labs/bootgraph')
                     root.children().last() + pomConfig
