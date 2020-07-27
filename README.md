@@ -1,5 +1,7 @@
 # BootGraph - Visualize Your Spring Boot Architecture
 
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.atlassian.bootgraph/bootgraph-core/badge.svg?style=plastic)](https://search.maven.org/search?q=g:com.atlassian.bootgraph) ![Build](https://github.com/atlassian-labs/bootgraph/workflows/Build/badge.svg?branch=master)
+
 BootGraph is a library that takes a Spring application context as input and creates one or more visual representations of it. 
 
 With a couple lines of code, you can create a visual graph of part your Spring application that helps you understand the codebase better. 
@@ -8,46 +10,24 @@ If you put these lines of code into a test, **the graph will be created with eve
   
 ## Installation
 
-Bootgraph is published via [jitpack.io](https://jitpack.io/). Note that is is only temporary. As soon as the code is somewhat more stable, we'll publish it to Maven Central.
+Please look up the latest version on [Maven Central](https://search.maven.org/search?q=g:com.atlassian.bootgraph) and add it to your `pom.xml` (or `build.gradle`) file:
 
-### Installing in Maven
-
-Add the jitpack.io repository:
-```xml
-<repositories>
-  <repository>
-    <id>jitpack.io</id>
-    <url>https://jitpack.io</url>
-  </repository>
-</repositories>
-```
-
-Add the dependency:
 ```xml
 <dependency>
-  <groupId>com.github.atlassian-labs</groupId>
-  <artifactId>bootgraph</artifactId>
-  <version>1.3.1-beta</version>
-  <scope>test</scope>
+  <groupId>com.atlassian.bootgraph</groupId>
+  <artifactId>bootgraph-core</artifactId>
+  <version>x.x.x</version>
 </dependency>
 ```
 
-### Installing in Gradle
+If you need the annotations, add this dependency as well:
 
-Add the jitpack.io repository:
-```groovy
-repositories {
-  ...
-  maven { url 'https://jitpack.io' }
-}
-```
-
-Add the dependency:
-```groovy
-dependencies {
-  ...
-  testImplementation 'com.github.atlassian-labs:bootgraph:1.3.1-beta'
-}
+```xml
+<dependency>
+  <groupId>com.atlassian.bootgraph</groupId>
+  <artifactId>bootgraph-annotations</artifactId>
+  <version>x.x.x</version>
+</dependency>
 ```
 
 ## Getting Started
