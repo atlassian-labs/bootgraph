@@ -160,6 +160,7 @@ subprojects {
             defaults {
                 publications('maven')
                 publishIvy = false
+                publishBuildInfo = false
             }
         }
     }
